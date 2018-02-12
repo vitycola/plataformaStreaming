@@ -1,7 +1,7 @@
-import org.apache.hadoop.hbase.client._
+import it.nerdammer.spark.hbase._
 import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka._
-import org.apache.spark.SparkConf
+import org.apache.spark.{SparkConf, SparkContext}
 import _root_.kafka.serializer.{DefaultDecoder, StringDecoder}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hbase.mapreduce.{TableInputFormat, TableOutputFormat}
@@ -11,14 +11,23 @@ import org.apache.hadoop.hbase.client.Put
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.client.HTable
 import org.apache.spark.storage.StorageLevel
-import org.apache.hadoop.hbase.{TableName, HBaseConfiguration}
+import org.apache.hadoop.hbase.{HBaseConfiguration, TableName}
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.Row
 
 
 
 object Prueba2Kafka {
+  org.apache.log4j.BasicConfigurator.configure()
   def main(args: Array[String]) {
     /** EL código de spark conf para hacer el streaming*/
-    val conf = new SparkConf().setMaster("local[4]").setAppName("ConsumidorKafka")
+
+
+
+    val conf = new SparkConf().setAppName("KafkaStreamingHBase")
+    if (sys.env("ENTORNO") == "DESARROLLO") {
+      conf.setMaster("local[*]")
+    }
     val ssc = new StreamingContext(conf, Seconds(5))
 
     /** KafkaConf tiene un Map de la ruta del server de kafka, la ruta del server de zookeeper, el grupo.id del consumidor para poder hacer redundancia, el timeout para conectar a zookeeper */
@@ -33,30 +42,28 @@ object Prueba2Kafka {
       ssc, kafkaConf, Map("test" -> 1),
       StorageLevel.MEMORY_ONLY_SER).map(_._2)
 
-    //** Pasamos a tratar los datos como queramos */
-    lines.print()
-    print(lines.count())
+    val sc = new SparkContext(conf)
+    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 
-    lines.foreachRDD ( rdd => {
-      val conf = HBaseConfiguration.create()
-      conf.set(TableOutputFormat.OUTPUT_TABLE, "b")
-      conf.set(TableInputFormat.INPUT_TABLE, "b")
-//      HBaseAdmin.checkHBaseAvailable(conf)
-      conf.set("hbase.zookeeper.quorum", "51.255.74.114:21000")
-//      conf.set("hbase.zookeeper.property.client.port", "21000")
-      conf.set("hbase.master", "localhost:60000")
-      conf.set("hbase.rootdir", "hdfs://sandbox.hortonworks.com:8020/apps/hbase/data")
-//      conf.set("zookeeper.znode.parent", "/hbase-unsecure")
+    val rutaTrafico = "file:///C:/Users/plopez/Desktop/events-.1513211291592"
+    val trafico = sqlContext.read.json(rutaTrafico)
+    val traficoRDD: RDD[(String, Row)] = trafico.selectExpr(List("idTracker", "ip", "url", "parametros.referer", "parametros.evar7", "parametros.evar39", "parametros.evar49", "decay", "useragent", "os", "dispositivo", "language"): _*).rdd.keyBy(t => if (t.getAs[String]("idTracker").indexOf('?') > 0) t.getAs[String]("idTracker").substring(0, t.getAs[String]("idTracker").indexOf('?')) else t.getAs[String]("idTracker"))
 
-      val connection = ConnectionFactory.createConnection(conf)
-      val table = connection.getTable(TableName.valueOf( Bytes.toBytes("b") ) )
 
-      val p = new Put(Bytes.toBytes("b"))
-      p.add(Bytes.toBytes("b"), Bytes.toBytes("b"), Bytes.toBytes("b"))
-      println("hola2")
-      table.put(p)
 
-    })
+    conf.set("spark.hbase.host", "sandbox.hortonworks.com:21000")
+
+
+    val rdd = sc.parallelize(1 to 100)
+      .map(i => (i.toString, i+1, "Hello"))
+
+    rdd.toHBaseTable("b")
+      .toColumns("b")
+      .inColumnFamily("b")
+      .save()
+
+
+
 
       ssc.start()
       ssc.awaitTermination()
