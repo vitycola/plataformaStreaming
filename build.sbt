@@ -15,6 +15,7 @@ libraryDependencies ++= Seq(
   "org.apache.hbase" % "hbase-common" % "1.1.2",
   "org.apache.hbase" % "hbase-examples" % "1.1.2",
   "zhzhan" % "shc" % "0.0.11-1.6.1-s_2.10",
+  "org.apache.hbase" % "hbase-spark" % "1.2.0-cdh5.8.4",
   "org.apache.hbase" % "hbase-annotations" % "1.1.2",
   "org.apache.hbase" % "hbase" % "1.1.2",
   "org.apache.hbase" % "hbase-server" % "1.1.2",
