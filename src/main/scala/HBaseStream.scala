@@ -18,17 +18,17 @@ object HBaseStream{
       sparkConf.setMaster("local[*]")
     }
 
-    sparkConf.set("spark.hbase.host", "sandbox.hortonworks.com:21000")
+    sparkConf.set("spark.hbase.host", "51.255.74.114:16000")
     val sc = new SparkContext(sparkConf)
 
     sc.setLogLevel("ERROR")
-    val config = new HBaseConfiguration()
+    val config = HBaseConfiguration.create()
     val hbaseContext = new HBaseContext(sc, config)
     val ssc = new StreamingContext(sc, Seconds(10))
     ssc.checkpoint("/tmp/spark_checkpoint")
 
 
-    val lines = KafkaUtils.createStream(ssc, "localhost:2100", "plataformaStreaming", Map(("streamingSpark", 1))).map(_._2)
+    val lines = KafkaUtils.createStream(ssc, "51.255.74.114:21000", "plataformaStreaming", Map(("streamingSpark", 1))).map(_._2)
     val csv = lines.map(x => x.split(","))
     //144,ALICANTE,20170117,4.8,7.2
     csv.hbaseBulkPut(

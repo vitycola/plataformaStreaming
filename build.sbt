@@ -4,7 +4,7 @@ version := "1.0"
 
 scalaVersion := "2.10.5"
 
-resolvers ++= Seq(//"pentaho-repo" at "https://public.nexus.pentaho.org/content/groups/omni/",
+resolvers ++= Seq("pentaho-repo" at "https://public.nexus.pentaho.org/content/groups/omni/",
                   //"hbase-spark" at "https://mvnrepository.com/artifact/org.apache.hbase/hbase-spark/",
                   "sparkLib" at "https://dl.bintray.com/spark-packages/maven/",
                   "ClouderaRepo" at "https://repository.cloudera.com/content/repositories/releases",
