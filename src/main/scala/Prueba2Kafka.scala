@@ -1,4 +1,3 @@
-import it.nerdammer.spark.hbase._
 import org.apache.spark.streaming.{Duration, StreamingContext}
 import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka._
@@ -73,10 +72,6 @@ lines.print()
         val rdd = sc.parallelize(1 to 100)
           .map(i => (i.toString, i+1, "Hello"))
 
-        rdd.toHBaseTable("b")
-          .toColumns("b")
-          .inColumnFamily("b")
-                  .save()
 
       }
     }
