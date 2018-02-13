@@ -18,7 +18,7 @@ object HBase{
 
     val rdd =  sc.parallelize(Array(
       (Bytes.toBytes("row1"),
-        Array((Bytes.toBytes("colFamily)"), Bytes.toBytes("col1"), Bytes.toBytes("value1"))))))
+        Array((Bytes.toBytes("adn)"), Bytes.toBytes("col1"), Bytes.toBytes("value1"))))))
 
     rdd.hbaseForeachPartition(hbaseContext, (it, conn) => {
     val bufferedMutator = conn.getBufferedMutator(TableName.valueOf("usuarios"))
