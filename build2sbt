@@ -36,6 +36,6 @@ libraryDependencies ++= Seq(
   "com.databricks" % "spark-csv_2.10" % "0.1" exclude ("org.apache.hadoop","hadoop-yarn-server-web-proxy")
 
 
-).map(_.excludeAll(ExclusionRule(organization = "org.mortbay.jetty"),ExclusionRule(organization = "javax.servlet"))
+).map(_.excludeAll(ExclusionRule(organization = "org.mortbay.jetty"),ExclusionRule(organization = "javax.servlet"),ExclusionRule(organization = "org.mortbay.netty"))
 
 )

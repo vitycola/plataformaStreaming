@@ -37,6 +37,6 @@ libraryDependencies ++= Seq(
 
 
 
-).map(_.excludeAll(ExclusionRule(organization = "org.mortbay.jetty"),ExclusionRule(organization = "javax.servlet"))
+).map(_.excludeAll(ExclusionRule(organization = "org.mortbay.jetty"),ExclusionRule(organization = "javax.servlet"),ExclusionRule(organization = "org.mortbay.netty"))
 
 )
