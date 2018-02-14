@@ -25,7 +25,8 @@ def main(args: Array[String]) {
   }
 
   val sc = new SparkContext(sparkConf)
-  val rdd = sc.parallelize(Array("b","c")).map(x => x(0)).toString()
+  val rdd = sc.parallelize(Array("b","c")).map(x => x(0))
+val rdd1 = rdd.collect()
 
 
   val conf = HBaseConfiguration.create()
@@ -34,7 +35,7 @@ def main(args: Array[String]) {
   val connection = ConnectionFactory.createConnection(conf)
 
   val table = connection.getTable(TableName.valueOf(Bytes.toBytes(HBASE_TABLE)))
-  var get = new Get(Bytes.toBytes(rdd))
+  var get = new Get(Bytes.toBytes(rdd1(0)))
   var result = table.get(get)
 
   val cells = result.rawCells();
