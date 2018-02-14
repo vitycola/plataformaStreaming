@@ -1,37 +1,30 @@
-import org.apache.hadoop.hbase.{HBaseConfiguration,TableName}
-import org.apache.hadoop.hbase.HBaseConfiguration
-import org.apache.hadoop.hbase.client.Put
-import org.apache.hadoop.hbase.spark.HBaseContext
+import org.apache.hadoop.hbase.{CellUtil, HBaseConfiguration, TableName}
+import org.apache.hadoop.hbase.mapreduce.TableInputFormat
 import org.apache.hadoop.hbase.util.Bytes
-import org.apache.hadoop.hbase.spark.HBaseRDDFunctions._
+import org.apache.hadoop.hbase.client._
+import org.apache.hadoop.hbase.client.ConnectionFactory
+import scala.collection.JavaConverters._
 
-import org.apache.spark.{SparkContext,SparkConf}
+object HBase {
+  org.apache.log4j.BasicConfigurator.configure()
+  val APP_NAME: String = "SparkHbaseJob"
+  var HBASE_DB_HOST: String = null
+  var HBASE_TABLE: String = null
+  var HBASE_COLUMN_FAMILY: String = null
 
-object HBase{
-    def main(args: Array[String])  {
+  def main(args: Array[String]) {
+    HBASE_DB_HOST = "127.0.0.1"
+    HBASE_TABLE = "b"
+    HBASE_COLUMN_FAMILY = "b"
 
-
-    val sparkConf = new SparkConf().setAppName("HBaseDemo")
-    val sc = new SparkContext(sparkConf)
     val conf = HBaseConfiguration.create()
-    val hbaseContext = new HBaseContext(sc, conf)
+    conf.set(TableInputFormat.INPUT_TABLE, HBASE_TABLE)
 
-    val rdd =  sc.parallelize(Array(
-      (Bytes.toBytes("row1"),
-        Array((Bytes.toBytes("adn)"), Bytes.toBytes("col1"), Bytes.toBytes("value1"))))))
+    val connection = ConnectionFactory.createConnection(conf)
+    val table = connection.getTable(TableName.valueOf(Bytes.toBytes(HBASE_TABLE)))
 
-    rdd.hbaseForeachPartition(hbaseContext, (it, conn) => {
-    val bufferedMutator = conn.getBufferedMutator(TableName.valueOf("usuarios"))
-
-    it.foreach( putRecord => {
-      val put = new Put(putRecord._1)
-      putRecord._2.foreach((putValue) => put.addColumn(putValue._1, putValue._2, putValue._3))
-      bufferedMutator.mutate(put)
-      })
-      bufferedMutator.flush()
-      bufferedMutator.close()
-    })
-
-
+    val put = new Put(Bytes.toBytes("b"))
+    put.addColumn( Bytes.toBytes("b"),  Bytes.toBytes("b"), Bytes.toBytes("e"))
+    table.put(put)
   }
 }
