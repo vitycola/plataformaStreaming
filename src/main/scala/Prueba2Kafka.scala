@@ -1,32 +1,15 @@
-//import org.apache.hadoop.hbase.{CellUtil, HBaseTestingUtility, HConstants, TableName}
 import _root_.kafka.serializer.{DefaultDecoder, StringDecoder}
-import org.apache.hadoop.hbase.spark.HBaseDStreamFunctions._
 import org.apache.hadoop.hbase.client.{ConnectionFactory, Get}
-import org.apache.hadoop.hbase.io.hfile.{CacheConfig, HFile}
-import org.apache.hadoop.hbase.mapreduce.{LoadIncrementalHFiles, TableInputFormat}
-import org.apache.hadoop.hbase.spark._
+import org.apache.hadoop.hbase.mapreduce.{TableInputFormat}
 import org.apache.hadoop.hbase.TableName
 import org.apache.hadoop.hbase.client._
-import org.apache.hadoop.hbase.exceptions._
-import org.apache.hadoop.hbase.CellComparator
-import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.kafka._
 import org.apache.spark.SparkConf
-import org.apache.spark.streaming._
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.Row
-import org.apache.spark.{Logging, SparkContext}
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.HBaseConfiguration
 import org.apache.hadoop.hbase.spark.HBaseContext
-import java.util.HashMap
-
-import org.junit.rules.TemporaryFolder
-
-import scala.collection.mutable
-import scala.tools.nsc.transform.PostErasure
 
 object Prueba2Kafka {
   //  org.apache.log4j.BasicConfigurator.configure()
