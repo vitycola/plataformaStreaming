@@ -3,6 +3,8 @@ import org.apache.hadoop.hbase.mapreduce.TableInputFormat
 import org.apache.hadoop.hbase.util.Bytes
 import org.apache.hadoop.hbase.client._
 import org.apache.hadoop.hbase.client.ConnectionFactory
+import org.apache.spark.{SparkConf, SparkContext}
+
 import scala.collection.JavaConverters._
 
 object getHBase{
@@ -17,13 +19,22 @@ def main(args: Array[String]) {
   HBASE_TABLE = "b"
   HBASE_COLUMN_FAMILY = "b"
 
+  val sparkConf = new SparkConf().setAppName("HBaseget")
+  if (sys.env("ENTORNO") == "DESARROLLO") {
+    sparkConf.setMaster("local[*]")
+  }
+
+  val sc = new SparkContext(sparkConf)
+  val rdd = sc.parallelize(Array("b","c")).map(x => x(0)).toString()
+
+
   val conf = HBaseConfiguration.create()
   conf.set(TableInputFormat.INPUT_TABLE, HBASE_TABLE)
 
   val connection = ConnectionFactory.createConnection(conf)
 
   val table = connection.getTable(TableName.valueOf(Bytes.toBytes(HBASE_TABLE)))
-  var get = new Get(Bytes.toBytes("b"))
+  var get = new Get(Bytes.toBytes(rdd))
   var result = table.get(get)
 
   val cells = result.rawCells();
@@ -33,7 +44,7 @@ def main(args: Array[String]) {
     val col_name = Bytes.toString(CellUtil.cloneQualifier(cell))
     val col_value = Bytes.toString(CellUtil.cloneValue(cell))
     val col_timestamp = cell.getTimestamp()
-    print("(%s,%s,%s) ".format(col_name, col_value, col_timestamp))
+
   }
 
 }}
